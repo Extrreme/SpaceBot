@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'dev.extrreme'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'net.dv8tion', name: 'JDA', version: '5.0.0-alpha.4'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10'
+    implementation group: 'org.ejml', name: 'ejml-simple', version: '0.41'
+}
+
+test {
+    useJUnitPlatform()
+}
