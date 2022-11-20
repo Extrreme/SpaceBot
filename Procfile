@@ -1,0 +1,1 @@
+worker: java -jar build/libs/SpaceBot-1.0-all.jar

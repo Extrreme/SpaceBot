@@ -1,12 +1,25 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
 }
 
-group 'dev.extrreme'
-version '1.0-SNAPSHOT'
+group = 'dev.extrreme'
+version = '1.0'
+
+sourceCompatibility = JavaVersion.VERSION_17
+
+jar {
+    manifest {
+        attributes 'Class-Path': '/libs/SpaceBot-1.0-all.jar', 'Main-Class': 'dev.extrreme.spacebot.Main'
+    }
+}
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    maven {
+        url 'https://m2.dv8tion.net/releases'
+    }
 }
 
 dependencies {
@@ -15,6 +28,7 @@ dependencies {
     implementation group: 'org.ejml', name: 'ejml-simple', version: '0.41'
 }
 
-test {
-    useJUnitPlatform()
-}
+task stage(dependsOn: ['build', 'shadowJar', 'clean', 'test'])
+
+build.mustRunAfter clean
+build.mustRunAfter test
