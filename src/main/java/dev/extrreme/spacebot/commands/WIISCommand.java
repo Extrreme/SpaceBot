@@ -2,16 +2,12 @@ package dev.extrreme.spacebot.commands;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.extrreme.spacebot.base.command.DiscordCommand;
-import dev.extrreme.spacebot.dto.APOD;
 import dev.extrreme.spacebot.utils.HTTPClient;
 import dev.extrreme.spacebot.utils.JSONUtility;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import java.awt.*;
 import java.io.IOException;
@@ -25,8 +21,8 @@ public class WIISCommand extends DiscordCommand {
     }
 
     @Override
-    public boolean execute(Guild guild, TextChannel channel, User sender, String... args) {
-        channel.sendMessageEmbeds(getPeople()).queue();
+    public boolean execute(SlashCommandEvent event) {
+        event.replyEmbeds(getPeople()).queue();
         return true;
     }
 

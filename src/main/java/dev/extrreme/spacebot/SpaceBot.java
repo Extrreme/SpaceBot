@@ -1,6 +1,7 @@
 package dev.extrreme.spacebot;
 
 import dev.extrreme.spacebot.base.DiscordBot;
+import dev.extrreme.spacebot.base.command.CommandManager;
 import dev.extrreme.spacebot.commands.APODCommand;
 import dev.extrreme.spacebot.commands.HelpCommand;
 import dev.extrreme.spacebot.commands.SatelliteInfoCommand;
@@ -19,9 +20,11 @@ public class SpaceBot extends DiscordBot {
     private void registerListeners() {}
 
     private void registerCommands() {
-        registerCommand(new HelpCommand());
-        registerCommand(new SatelliteInfoCommand());
-        registerCommand(new APODCommand());
-        registerCommand(new WIISCommand());
+        CommandManager commandManager = getCommandManager();
+
+        commandManager.registerGlobalCommand(new HelpCommand());
+        commandManager.registerGlobalCommand(new SatelliteInfoCommand());
+        commandManager.registerGlobalCommand(new APODCommand());
+        commandManager.registerGlobalCommand(new WIISCommand());
     }
 }

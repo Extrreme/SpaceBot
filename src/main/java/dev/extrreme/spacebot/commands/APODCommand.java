@@ -2,9 +2,7 @@ package dev.extrreme.spacebot.commands;
 
 import dev.extrreme.spacebot.base.command.DiscordCommand;
 import dev.extrreme.spacebot.dto.APOD;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 public class APODCommand extends DiscordCommand {
     public APODCommand() {
@@ -12,13 +10,13 @@ public class APODCommand extends DiscordCommand {
     }
 
     @Override
-    public boolean execute(Guild guild, TextChannel channel, User sender, String... args) {
+    public boolean execute(SlashCommandEvent event) {
         APOD apod = APOD.getAPOD();
 
         if (apod != null) {
-            channel.sendMessageEmbeds(APOD.getAPOD().toEmbed()).queue();
+            event.replyEmbeds(APOD.getAPOD().toEmbed()).queue();
         } else {
-            channel.sendMessage("Failed to retrieve the Astronomy Picture of the Day, please try again later").queue();
+            event.reply("Failed to retrieve the Astronomy Picture of the Day, please try again later").queue();
         }
 
         return true;

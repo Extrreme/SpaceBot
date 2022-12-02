@@ -2,46 +2,72 @@ package dev.extrreme.spacebot.base.command;
 
 import dev.extrreme.spacebot.base.DiscordBot;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CommandManager {
-    private final String prefix;
-    private final List<DiscordCommand> commands = new ArrayList<>();
 
-    public CommandManager(DiscordBot bot, String prefix) {
-        this.prefix = prefix;
-        bot.registerListener(new CommandListener(this));
-    }
+public class CommandManager {
+    private final DiscordBot bot;
+
+    private final List<DiscordCommand> globalCommands = new ArrayList<>();
+    private final HashMap<Long, List<DiscordCommand>> guildCommands = new HashMap<>();
 
     public CommandManager(DiscordBot bot) {
-        this(bot, "?");
+        this.bot = bot;
     }
 
-    public String getPrefix() {
-        return prefix;
+    public void registerGlobalCommand(DiscordCommand command) {
+        if (bot.isReady()) {
+            bot.getJda().upsertCommand(command.toCommandData()).queue();
+        }
+        globalCommands.add(command);
     }
 
-    public void registerCommand(DiscordCommand command) {
-        commands.add(command);
+    public void registerGuildCommand(DiscordCommand command, Guild... guilds) {
+        for (Guild guild : guilds) {
+            if (bot.isReady()) {
+                guild.upsertCommand(command.toCommandData()).queue();
+            }
+            guildCommands.computeIfAbsent(guild.getIdLong(), id -> new ArrayList<>()).add(command);
+        }
     }
 
-    public void unregisterCommand(DiscordCommand command) {
-        commands.remove(command);
+    public void registerGuildCommand(DiscordCommand command, long... guildIds) {
+        for (long guildId : guildIds) {
+            if (bot.isReady()) {
+                Guild guild = bot.getJda().getGuildById(guildId);
+                if (guild != null) {
+                    guild.upsertCommand(command.toCommandData()).queue();
+                }
+            }
+            guildCommands.computeIfAbsent(guildId, id -> new ArrayList<>()).add(command);
+        }
     }
 
-    public List<DiscordCommand> getCommands() {
-        return new ArrayList<>(commands);
+    public List<DiscordCommand> getGlobalCommands() {
+        return new ArrayList<>(globalCommands);
     }
 
-    public Map<String, List<DiscordCommand>> getByCategories() {
+    public List<DiscordCommand> getGuildCommands(Guild guild) {
+        if (guildCommands.get(guild.getIdLong()) == null) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(guildCommands.get(guild.getIdLong()));
+    }
+
+    public List<DiscordCommand> getAllCommands(Guild guild) {
+        List<DiscordCommand> commands = getGlobalCommands();
+        commands.addAll(getGuildCommands(guild));
+
+        return commands;
+    }
+
+    public Map<String, List<DiscordCommand>> getByCategories(Guild guild) {
         Map<String, List<DiscordCommand>> sorted = new HashMap<>();
-        commands.forEach(command -> {
+        getAllCommands(guild).forEach(command -> {
             String cat = command.getCategory();
             if (!sorted.containsKey(cat)) {
                 sorted.put(cat, new ArrayList<>());
@@ -50,16 +76,5 @@ public class CommandManager {
         });
 
         return sorted;
-    }
-
-    public void onCommand(Guild guild, TextChannel channel, User user, String command, String... args) {
-        for (DiscordCommand possibleCommand : commands) {
-            if (!possibleCommand.getLabel().equalsIgnoreCase(command)) {
-                continue;
-            }
-            if (!possibleCommand.execute(guild, channel, user, args)) {
-                possibleCommand.sendArgumentsError(channel, user);
-            }
-        }
     }
 }

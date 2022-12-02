@@ -1,7 +1,7 @@
 package dev.extrreme.spacebot.dto;
 
 import com.google.gson.JsonObject;
-import dev.extrreme.spacebot.base.DiscordEmbeddable;
+import dev.extrreme.spacebot.base.miscellaneous.DiscordEmbeddable;
 import dev.extrreme.spacebot.utils.HTTPClient;
 import dev.extrreme.spacebot.utils.JSONUtility;
 import dev.extrreme.spacebot.utils.MatrixUtility;
