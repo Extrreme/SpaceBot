@@ -6,6 +6,7 @@ import dev.extrreme.spacebot.commands.APODCommand;
 import dev.extrreme.spacebot.commands.HelpCommand;
 import dev.extrreme.spacebot.commands.SatelliteInfoCommand;
 import dev.extrreme.spacebot.commands.WIISCommand;
+import dev.extrreme.spacebot.events.ButtonListener;
 
 import javax.security.auth.login.LoginException;
 
@@ -17,7 +18,9 @@ public class SpaceBot extends DiscordBot {
         registerCommands();
     }
 
-    private void registerListeners() {}
+    private void registerListeners() {
+        registerListener(new ButtonListener());
+    }
 
     private void registerCommands() {
         CommandManager commandManager = getCommandManager();
